@@ -2,7 +2,7 @@ package com.maks_buriak.mychat.data.storage.firebase
 
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
-import com.maks_buriak.mychat.data.storage.firebase.models.FirebaseMessageDto
+import com.maks_buriak.mychat.data.storage.models.FirebaseMessageDto
 import kotlinx.coroutines.tasks.await
 
 class FirebaseMessageStorage {

@@ -1,4 +1,4 @@
-package com.maks_buriak.mychat.data.storage.firebase.models
+package com.maks_buriak.mychat.data.storage.models
 
 data class FirebaseMessageDto (
     val id: String = "",

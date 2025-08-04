@@ -1,7 +1,7 @@
 package com.maks_buriak.mychat.data.repository
 
 import com.maks_buriak.mychat.data.storage.firebase.FirebaseMessageStorage
-import com.maks_buriak.mychat.data.storage.firebase.models.FirebaseMessageDto
+import com.maks_buriak.mychat.data.storage.models.FirebaseMessageDto
 import com.maks_buriak.mychat.domain.models.Message
 import com.maks_buriak.mychat.domain.repository.MessageRepository
 
