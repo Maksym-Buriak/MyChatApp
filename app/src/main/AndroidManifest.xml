@@ -15,8 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyChat"
         tools:targetApi="31">
+
+        <!-- AuthActivity -->
         <activity
-            android:name=".presentation.MainActivity"
+            android:name=".presentation.activity.AuthActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.MyChat">
@@ -26,6 +28,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- MainActivity -->
+        <activity android:name=".presentation.activity.MainActivity"
+            android:exported="false"/>
+
     </application>
 
 </manifest>

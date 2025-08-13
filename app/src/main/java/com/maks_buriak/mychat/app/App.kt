@@ -19,5 +19,11 @@ class App : Application() {
             androidContext(this@App)
             modules(listOf(appModule, domainModule, dataModule))
         }
+        /*
+            1. UI (View) створює ViewModel через DI
+            2. ViewModel отримує UseCase через DI
+            3. UseCase отримує Repository через DI
+            4. Repository отримує Storage через DI
+        */
     }
 }
