@@ -57,7 +57,7 @@ fun AuthScreen(activity: Activity, onSignedIn: () -> Unit, viewModel: AuthViewMo
         Button(onClick = {
             launcher.launch(viewModel.startGoogleSignIn())
         }) {
-            Text("Зареєструватися через Google")
+            Text("Увійти через Google")
         }
     }
 }

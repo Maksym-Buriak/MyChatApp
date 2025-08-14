@@ -6,10 +6,14 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.maks_buriak.mychat.domain.models.Message
 import com.maks_buriak.mychat.domain.usecase.SendMessageUseCase
+import com.maks_buriak.mychat.domain.usecase.SignOutUseCase
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-class MessageViewModel(private val sendMessageUseCase: SendMessageUseCase) : ViewModel() {
+class MessageViewModel(
+    private val sendMessageUseCase: SendMessageUseCase,
+    private val signOutUseCase: SignOutUseCase
+) : ViewModel() {
 
     fun sendMessage(messageText: String){
         Log.d("MessageViewModel", "sendMessage called with message=$messageText")
@@ -38,5 +42,9 @@ class MessageViewModel(private val sendMessageUseCase: SendMessageUseCase) : Vie
             }
 
         }
+    }
+
+    fun signOut() {
+        signOutUseCase()
     }
 }

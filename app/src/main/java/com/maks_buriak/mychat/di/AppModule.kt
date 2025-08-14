@@ -19,7 +19,8 @@ val appModule = module {
 
     viewModel<MessageViewModel> {
         MessageViewModel(
-            sendMessageUseCase = get()
+            sendMessageUseCase = get(),
+            signOutUseCase = get()
         )
     }
 
