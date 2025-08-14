@@ -37,19 +37,10 @@ fun AuthScreen(activity: Activity, onSignedIn: () -> Unit, viewModel: AuthViewMo
         }
     }
 
-    val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-        try {
-            val account = task.getResult(ApiException::class.java)
-            account?.idToken?.let { idToken ->
-                viewModel.onGoogleSignIn(idToken)
-            }
-        } catch (e: ApiException) {
-            e.printStackTrace()
-        }
+        viewModel.handleGoogleSignInResult(result.data)
     }
 
     Column(
@@ -64,15 +55,7 @@ fun AuthScreen(activity: Activity, onSignedIn: () -> Unit, viewModel: AuthViewMo
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
-            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(context.getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build()
-            val client = GoogleSignIn.getClient(context, gso)
-
-            client.signOut().addOnCompleteListener {
-                launcher.launch(client.signInIntent)
-            }
+            launcher.launch(viewModel.startGoogleSignIn())
         }) {
             Text("Зареєструватися через Google")
         }
