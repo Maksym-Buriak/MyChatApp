@@ -1,5 +1,6 @@
 package com.maks_buriak.mychat.di
 
+import com.maks_buriak.mychat.domain.usecase.GetCurrentUserUseCase
 import com.maks_buriak.mychat.domain.usecase.SendMessageUseCase
 import com.maks_buriak.mychat.domain.usecase.SignInWithGoogleUseCase
 import com.maks_buriak.mychat.domain.usecase.SignOutUseCase
@@ -17,5 +18,9 @@ val domainModule = module {
 
     factory<SignOutUseCase> {
         SignOutUseCase(repository = get())
+    }
+
+    factory<GetCurrentUserUseCase> {
+        GetCurrentUserUseCase(repository = get())
     }
 }

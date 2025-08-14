@@ -105,6 +105,9 @@ dependencies {
     // Compose BoM
     implementation(platform("androidx.compose:compose-bom:2025.05.01"))
 
+    // Coil
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
     // AndroidX
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

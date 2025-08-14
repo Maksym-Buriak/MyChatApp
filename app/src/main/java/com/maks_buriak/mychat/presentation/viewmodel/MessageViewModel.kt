@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.maks_buriak.mychat.domain.models.Message
+import com.maks_buriak.mychat.domain.models.User
+import com.maks_buriak.mychat.domain.usecase.GetCurrentUserUseCase
 import com.maks_buriak.mychat.domain.usecase.SendMessageUseCase
 import com.maks_buriak.mychat.domain.usecase.SignOutUseCase
 import kotlinx.coroutines.launch
@@ -12,8 +14,11 @@ import java.util.UUID
 
 class MessageViewModel(
     private val sendMessageUseCase: SendMessageUseCase,
-    private val signOutUseCase: SignOutUseCase
+    private val signOutUseCase: SignOutUseCase,
+    getCurrentUserUseCase: GetCurrentUserUseCase
 ) : ViewModel() {
+
+    val currentUser: User? = getCurrentUserUseCase()
 
     fun sendMessage(messageText: String){
         Log.d("MessageViewModel", "sendMessage called with message=$messageText")

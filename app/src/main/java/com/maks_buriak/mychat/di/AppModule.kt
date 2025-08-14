@@ -20,7 +20,8 @@ val appModule = module {
     viewModel<MessageViewModel> {
         MessageViewModel(
             sendMessageUseCase = get(),
-            signOutUseCase = get()
+            signOutUseCase = get(),
+            getCurrentUserUseCase = get()
         )
     }
 
