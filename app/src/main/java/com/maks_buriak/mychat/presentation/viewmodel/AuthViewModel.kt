@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.common.api.ApiException
 import com.maks_buriak.mychat.data.authentication.google.GoogleSignInHelper
 import com.maks_buriak.mychat.domain.models.User
-import com.maks_buriak.mychat.domain.repository.FirebaseAuthRepository
+import com.maks_buriak.mychat.domain.usecase.GetCurrentUserUseCase
 import com.maks_buriak.mychat.domain.usecase.SignInWithGoogleUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,11 +14,11 @@ import kotlinx.coroutines.launch
 
 class AuthViewModel(
     private val signInWithGoogleUseCase: SignInWithGoogleUseCase,
-    private val authRepository: FirebaseAuthRepository,
+    getCurrentUserUseCase: GetCurrentUserUseCase,
     private val googleSignInHelper: GoogleSignInHelper
 ) : ViewModel() {
 
-    private val _userState = MutableStateFlow<User?>(authRepository.getCurrentUser())
+    private val _userState = MutableStateFlow(getCurrentUserUseCase())
     val userState: StateFlow<User?> = _userState
 
 
@@ -39,7 +39,7 @@ class AuthViewModel(
     }
 
 
-    fun onGoogleSignIn(idToken: String) {
+    private fun onGoogleSignIn(idToken: String) {
         viewModelScope.launch {
             val result = signInWithGoogleUseCase(idToken)
             result.onSuccess { user ->

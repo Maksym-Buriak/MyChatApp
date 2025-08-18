@@ -28,7 +28,7 @@ val appModule = module {
     viewModel<AuthViewModel> {
         AuthViewModel(
             signInWithGoogleUseCase = get(),
-            authRepository = get(),
+            getCurrentUserUseCase = get(),
             googleSignInHelper = get()
         )
     }
