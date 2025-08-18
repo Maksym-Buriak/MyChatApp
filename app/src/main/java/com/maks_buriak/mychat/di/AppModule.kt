@@ -29,7 +29,8 @@ val appModule = module {
         AuthViewModel(
             signInWithGoogleUseCase = get(),
             getCurrentUserUseCase = get(),
-            googleSignInHelper = get()
+            googleSignInHelper = get(),
+            saveUserToFirestoreUseCase = get()
         )
     }
 }

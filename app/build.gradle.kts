@@ -101,6 +101,7 @@ dependencies {
     implementation("com.google.firebase:firebase-common")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-database")
+    implementation("com.google.firebase:firebase-firestore")
 
     // Compose BoM
     implementation(platform("androidx.compose:compose-bom:2025.05.01"))

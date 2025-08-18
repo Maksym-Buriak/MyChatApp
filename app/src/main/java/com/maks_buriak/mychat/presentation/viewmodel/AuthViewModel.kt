@@ -7,6 +7,7 @@ import com.google.android.gms.common.api.ApiException
 import com.maks_buriak.mychat.data.authentication.google.GoogleSignInHelper
 import com.maks_buriak.mychat.domain.models.User
 import com.maks_buriak.mychat.domain.usecase.GetCurrentUserUseCase
+import com.maks_buriak.mychat.domain.usecase.SaveUserToFirestoreUseCase
 import com.maks_buriak.mychat.domain.usecase.SignInWithGoogleUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +16,8 @@ import kotlinx.coroutines.launch
 class AuthViewModel(
     private val signInWithGoogleUseCase: SignInWithGoogleUseCase,
     getCurrentUserUseCase: GetCurrentUserUseCase,
-    private val googleSignInHelper: GoogleSignInHelper
+    private val googleSignInHelper: GoogleSignInHelper,
+    private val saveUserToFirestoreUseCase: SaveUserToFirestoreUseCase
 ) : ViewModel() {
 
     private val _userState = MutableStateFlow(getCurrentUserUseCase())
@@ -44,6 +46,12 @@ class AuthViewModel(
             val result = signInWithGoogleUseCase(idToken)
             result.onSuccess { user ->
                 _userState.value = user
+
+                saveUserToFirestoreUseCase(user)
+
+//                if (user.phoneNumber == null) {
+//                    // TODO: show PhoneVerificationScreen
+//                }
             }.onFailure {
                 _userState.value = null
             }

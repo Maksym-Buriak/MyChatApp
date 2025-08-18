@@ -40,6 +40,7 @@ dependencies {
     implementation("com.google.firebase:firebase-common")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-database")
+    implementation("com.google.firebase:firebase-firestore")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.play.services.auth)
