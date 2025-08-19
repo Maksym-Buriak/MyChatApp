@@ -47,10 +47,14 @@ class AuthViewModel(
     private fun onGoogleSignIn(idToken: String) {
         viewModelScope.launch {
             val result = signInWithGoogleUseCase(idToken)
-            result.onSuccess { user ->
+            result.onSuccess { authUserResult ->
+
+                val user = authUserResult.user
                 _userState.value = user
 
-                saveUserToFirestoreUseCase(user)
+                if (authUserResult.isNewUser) {
+                    saveUserToFirestoreUseCase(user)
+                }
 
                 if (user.phoneNumber == null) {
                     _navigateToPhoneAuth.value = true // call the callback to open the PhoneAuthActivity

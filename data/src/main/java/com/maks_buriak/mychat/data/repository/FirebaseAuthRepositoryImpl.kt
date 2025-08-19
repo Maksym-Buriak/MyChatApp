@@ -3,20 +3,26 @@ package com.maks_buriak.mychat.data.repository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.maks_buriak.mychat.data.storage.models.FirebaseUserDto
+import com.maks_buriak.mychat.domain.models.AuthUserResult
 import com.maks_buriak.mychat.domain.models.User
 import com.maks_buriak.mychat.domain.repository.FirebaseAuthRepository
 import kotlinx.coroutines.tasks.await
 
 class FirebaseAuthRepositoryImpl(private val firebaseAuth: FirebaseAuth) : FirebaseAuthRepository {
-    override suspend fun signInWithGoogle(idToken: String): Result<User> {
+    override suspend fun signInWithGoogle(idToken: String): Result<AuthUserResult> {
         return try {
             val credential = GoogleAuthProvider.getCredential(idToken, null)
             val authResult = firebaseAuth.signInWithCredential(credential).await()
             val firebaseUser = authResult.user
                 ?: return Result.failure(Exception("User is null"))
 
-            val dto = FirebaseUserDto.fromFirebaseUser(firebaseUser)
-            Result.success(dto.toDomain())
+            val isNewUser = authResult.additionalUserInfo?.isNewUser ?: false
+
+            val user = FirebaseUserDto.fromFirebaseUser(firebaseUser).toDomain()
+            Result.success(AuthUserResult(user = user, isNewUser = isNewUser))
+
+//            val dto = FirebaseUserDto.fromFirebaseUser(firebaseUser)
+//            Result.success(dto.toDomain())
 
         } catch (e: Exception) {
             Result.failure(e)
