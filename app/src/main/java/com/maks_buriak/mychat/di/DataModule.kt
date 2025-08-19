@@ -4,12 +4,15 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.database
 import com.google.firebase.firestore.FirebaseFirestore
+import com.maks_buriak.mychat.data.authentication.phoneNumber.currentActivity
 import com.maks_buriak.mychat.data.repository.FirebaseAuthRepositoryImpl
 import com.maks_buriak.mychat.data.repository.MessageRepositoryImpl
+import com.maks_buriak.mychat.data.repository.PhoneAuthRepositoryImpl
 import com.maks_buriak.mychat.data.repository.UserRepositoryImpl
 import com.maks_buriak.mychat.data.storage.firebase.FirebaseMessageStorage
 import com.maks_buriak.mychat.domain.repository.FirebaseAuthRepository
 import com.maks_buriak.mychat.domain.repository.MessageRepository
+import com.maks_buriak.mychat.domain.repository.PhoneAuthRepository
 import com.maks_buriak.mychat.domain.repository.UserRepository
 import org.koin.dsl.module
 
@@ -31,4 +34,12 @@ val dataModule = module {
     // Firestore
     single { FirebaseFirestore.getInstance() }
     single<UserRepository> { UserRepositoryImpl(get()) }
+
+    // PhoneAuthRepository
+    single<PhoneAuthRepository> {
+        PhoneAuthRepositoryImpl(
+            firebaseAuth = get(),
+            activityProvider = { currentActivity() }
+        )
+    }
 }

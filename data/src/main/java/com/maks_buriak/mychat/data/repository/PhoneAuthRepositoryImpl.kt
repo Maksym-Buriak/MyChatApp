@@ -1,0 +1,62 @@
+package com.maks_buriak.mychat.data.repository
+
+import android.app.Activity
+import com.google.firebase.FirebaseException
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.PhoneAuthCredential
+import com.google.firebase.auth.PhoneAuthOptions
+import com.google.firebase.auth.PhoneAuthProvider
+import com.maks_buriak.mychat.domain.repository.PhoneAuthRepository
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.tasks.await
+import java.util.concurrent.TimeUnit
+import kotlin.coroutines.resume
+
+class PhoneAuthRepositoryImpl(
+    private val firebaseAuth: FirebaseAuth,
+    private val activityProvider: () -> Activity // function, that return current Activity
+) : PhoneAuthRepository {
+
+    private var lastVerificationId: String? = null
+
+    override suspend fun sendVerificationCode(phoneNumber: String): Result<String> {
+        return suspendCancellableCoroutine { continuation ->
+            val options = PhoneAuthOptions.newBuilder(firebaseAuth)
+                .setPhoneNumber(phoneNumber)
+                .setTimeout(60L, TimeUnit.SECONDS)
+                .setActivity(activityProvider()) // Activity is passed here via lambda
+                .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+                    override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                        continuation.resume(Result.success(credential.smsCode ?: ""))
+                    }
+
+                    override fun onVerificationFailed(e: FirebaseException) {
+                        continuation.resume(Result.failure(e))
+                    }
+
+                    override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
+                        lastVerificationId = verificationId
+                        continuation.resume(Result.success(verificationId))
+                    }
+                })
+                .build()
+
+            PhoneAuthProvider.verifyPhoneNumber(options)
+        }
+    }
+
+    override suspend fun verifyCode(verificationId: String, code: String): Result<Unit> {
+        val id = verificationId.takeIf { it.isNotEmpty() } ?: lastVerificationId
+        return try {
+            val credential = PhoneAuthProvider.getCredential(id!!, code)
+
+            val currentUser = firebaseAuth.currentUser ?: return Result.failure(Exception("User is not signed in"))
+            currentUser.linkWithCredential(credential).await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+}

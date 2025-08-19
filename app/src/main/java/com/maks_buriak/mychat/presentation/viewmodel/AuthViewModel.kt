@@ -23,6 +23,9 @@ class AuthViewModel(
     private val _userState = MutableStateFlow(getCurrentUserUseCase())
     val userState: StateFlow<User?> = _userState
 
+    private val _navigateToPhoneAuth = MutableStateFlow(false)
+    val navigateToPhoneAuth: StateFlow<Boolean> = _navigateToPhoneAuth
+
 
     fun startGoogleSignIn(): Intent {
         return googleSignInHelper.getSignInIntent()
@@ -49,9 +52,9 @@ class AuthViewModel(
 
                 saveUserToFirestoreUseCase(user)
 
-//                if (user.phoneNumber == null) {
-//                    // TODO: show PhoneVerificationScreen
-//                }
+                if (user.phoneNumber == null) {
+                    _navigateToPhoneAuth.value = true // call the callback to open the PhoneAuthActivity
+                }
             }.onFailure {
                 _userState.value = null
             }

@@ -3,8 +3,10 @@ package com.maks_buriak.mychat.di
 import com.maks_buriak.mychat.domain.usecase.GetCurrentUserUseCase
 import com.maks_buriak.mychat.domain.usecase.SaveUserToFirestoreUseCase
 import com.maks_buriak.mychat.domain.usecase.SendMessageUseCase
+import com.maks_buriak.mychat.domain.usecase.SendVerificationCodeUseCase
 import com.maks_buriak.mychat.domain.usecase.SignInWithGoogleUseCase
 import com.maks_buriak.mychat.domain.usecase.SignOutUseCase
+import com.maks_buriak.mychat.domain.usecase.VerifyCodeUseCase
 import org.koin.dsl.module
 
 val domainModule = module {
@@ -27,5 +29,13 @@ val domainModule = module {
 
     factory<SaveUserToFirestoreUseCase> {
         SaveUserToFirestoreUseCase(repository = get())
+    }
+
+    factory<SendVerificationCodeUseCase> {
+        SendVerificationCodeUseCase(repository = get())
+    }
+
+    factory<VerifyCodeUseCase> {
+        VerifyCodeUseCase(repository = get())
     }
 }
