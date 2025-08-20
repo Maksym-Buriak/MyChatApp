@@ -6,6 +6,7 @@ import com.maks_buriak.mychat.domain.usecase.SendMessageUseCase
 import com.maks_buriak.mychat.domain.usecase.SendVerificationCodeUseCase
 import com.maks_buriak.mychat.domain.usecase.SignInWithGoogleUseCase
 import com.maks_buriak.mychat.domain.usecase.SignOutUseCase
+import com.maks_buriak.mychat.domain.usecase.UpdateUserPhoneNumberUseCase
 import com.maks_buriak.mychat.domain.usecase.VerifyCodeUseCase
 import org.koin.dsl.module
 
@@ -37,5 +38,9 @@ val domainModule = module {
 
     factory<VerifyCodeUseCase> {
         VerifyCodeUseCase(repository = get())
+    }
+
+    factory<UpdateUserPhoneNumberUseCase> {
+        UpdateUserPhoneNumberUseCase(repository = get())
     }
 }

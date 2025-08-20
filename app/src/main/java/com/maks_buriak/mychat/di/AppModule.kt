@@ -39,8 +39,8 @@ val appModule = module {
         PhoneAuthViewModel(
             sendVerificationCodeUseCase = get(),
             verifyCodeUseCase = get(),
-            saveUserToFirestoreUseCase = get(),
-            getCurrentUserUseCase = get()
+            getCurrentUserUseCase = get(),
+            updateUserPhoneNumberUseCase = get()
         )
     }
 }

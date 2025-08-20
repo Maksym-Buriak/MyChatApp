@@ -32,4 +32,11 @@ class UserRepositoryImpl(private val firestore: FirebaseFirestore) : UserReposit
             .await()
         return snapshot.toObject(User::class.java)
     }
+
+    override suspend fun updateUserPhoneNumber(uid: String, phoneNumber: String) {
+        firestore.collection("users")
+            .document(uid)
+            .update("phoneNumber", phoneNumber)
+            .await()
+    }
 }

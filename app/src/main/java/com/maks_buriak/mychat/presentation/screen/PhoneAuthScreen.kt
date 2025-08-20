@@ -28,7 +28,7 @@ fun PhoneAuthScreen(
 ) {
     var phoneNumber by rememberSaveable { mutableStateOf("") }
     var code by rememberSaveable { mutableStateOf("") }
-    var verificationSent by rememberSaveable { mutableStateOf(false) }
+    val codeSent by viewModel.codeSent.collectAsState()
 
     val status by viewModel.status.collectAsState()
 
@@ -43,7 +43,7 @@ fun PhoneAuthScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        if (!verificationSent) {
+        if (!codeSent) {
             TextField(
                 value = phoneNumber,
                 onValueChange = { phoneNumber = it },
@@ -54,10 +54,7 @@ fun PhoneAuthScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Button(
-                onClick = {
-                    viewModel.sendCode(phoneNumber)
-                    verificationSent = true
-                }
+                onClick = { viewModel.sendCode(phoneNumber) }
             ) {
                 Text("Надіслати код")
             }
