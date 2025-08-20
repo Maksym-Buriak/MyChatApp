@@ -59,15 +59,35 @@ class MessageViewModel(
     }
 
     fun checkPhoneVerification(onNeedVerification: () -> Unit) {
-        val user = FirebaseAuth.getInstance().currentUser
-        if (user?.phoneNumber.isNullOrEmpty()) {
-            onNeedVerification()
-        } else {
-            _uiMessage.value = "Номер телефону вже підтверджено"
+        
+        val action = getPhoneAction()
+
+        when (action) {
+            PhoneAction.ADD -> {
+                onNeedVerification()
+                _uiMessage.value = "Додайте свій номер телефону"
+            }
+            PhoneAction.CHANGE -> {
+                onNeedVerification()
+                _uiMessage.value = "Для зміни номера телефону введіть його у відповідне поле та підтвердіть"
+            }
         }
     }
 
     fun clearUiMessage() {
         _uiMessage.value = null
+    }
+
+    enum class PhoneAction {
+        ADD, CHANGE
+    }
+
+    fun getPhoneAction(): PhoneAction {
+        val user = FirebaseAuth.getInstance().currentUser
+        return if (user?.phoneNumber.isNullOrEmpty()) {
+            PhoneAction.ADD
+        } else {
+            PhoneAction.CHANGE
+        }
     }
 }

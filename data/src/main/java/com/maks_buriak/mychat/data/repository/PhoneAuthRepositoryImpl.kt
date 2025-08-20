@@ -52,7 +52,14 @@ class PhoneAuthRepositoryImpl(
             val credential = PhoneAuthProvider.getCredential(id!!, code)
 
             val currentUser = firebaseAuth.currentUser ?: return Result.failure(Exception("User is not signed in"))
-            currentUser.linkWithCredential(credential).await()
+
+            if (currentUser.phoneNumber.isNullOrEmpty()) {
+                // Якщо номеру ще немає -> додаємо
+                currentUser.linkWithCredential(credential).await()
+            } else {
+                // Якщо номер уже є -> оновлюємо
+                currentUser.updatePhoneNumber(credential).await()
+            }
 
             Result.success(Unit)
         } catch (e: Exception) {

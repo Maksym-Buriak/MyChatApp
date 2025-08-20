@@ -54,6 +54,8 @@ fun MessageScreen(messageViewModel: MessageViewModel) {
 
     val uiMessage by messageViewModel.uiMessage.collectAsState()
 
+    val phoneAction = messageViewModel.getPhoneAction()
+
     uiMessage?.let { msg ->
         LaunchedEffect(msg) {
             android.widget.Toast.makeText(context, msg, android.widget.Toast.LENGTH_SHORT).show()
@@ -117,11 +119,21 @@ fun MessageScreen(messageViewModel: MessageViewModel) {
                         }
 
                         DropdownMenuItem(
-                            text = { Text("Підтвердити номер телефону") },
+                            text = {
+                                Text(
+                                    if (phoneAction == MessageViewModel.PhoneAction.ADD)
+                                        "Додати номер телефону"
+                                    else
+                                        "Змінити номер телефону"
+                                )
+                            },
                             onClick = {
                                 menuExpandet = false
                                 messageViewModel.checkPhoneVerification {
-                                    val intent = Intent(context, PhoneAuthActivity::class.java)
+                                    val intent = Intent(context, PhoneAuthActivity::class.java).apply {
+                                        putExtra("phoneAction", phoneAction.name)
+                                    }
+
                                     context.startActivity(intent)
                                 }
                             }
