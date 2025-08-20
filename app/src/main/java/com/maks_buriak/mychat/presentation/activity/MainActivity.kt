@@ -35,11 +35,11 @@ class MainActivity : ComponentActivity() {
             return
         }
 
-        if (user.phoneNumber.isNullOrEmpty()) {
-            startActivity(Intent(this, PhoneAuthActivity::class.java))
-            finish()
-            return
-        }
+//        if (user.phoneNumber.isNullOrEmpty()) {
+//            startActivity(Intent(this, PhoneAuthActivity::class.java))
+//            finish()
+//            return
+//        }
 
         user.getIdToken(true).addOnCompleteListener { task ->
             if (!task.isSuccessful) {

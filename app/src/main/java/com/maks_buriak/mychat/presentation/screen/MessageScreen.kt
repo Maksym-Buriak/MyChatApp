@@ -25,6 +25,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -37,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.maks_buriak.mychat.R
 import com.maks_buriak.mychat.presentation.activity.AuthActivity
+import com.maks_buriak.mychat.presentation.activity.PhoneAuthActivity
 import com.maks_buriak.mychat.presentation.viewmodel.MessageViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,6 +51,15 @@ fun MessageScreen(messageViewModel: MessageViewModel) {
 
     var messageText by rememberSaveable { mutableStateOf("") }
     var menuExpandet by rememberSaveable { mutableStateOf(false) }
+
+    val uiMessage by messageViewModel.uiMessage.collectAsState()
+
+    uiMessage?.let { msg ->
+        LaunchedEffect(msg) {
+            android.widget.Toast.makeText(context, msg, android.widget.Toast.LENGTH_SHORT).show()
+            messageViewModel.clearUiMessage()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -77,7 +89,7 @@ fun MessageScreen(messageViewModel: MessageViewModel) {
                                     model = account.photoUrl ?: R.drawable.ic_launcher_background,
                                     contentDescription = "User Avatar",
                                     modifier = Modifier
-                                        .size(48.dp)
+                                        .size(55.dp)
                                         .clip(CircleShape),
                                 )
 
@@ -86,10 +98,16 @@ fun MessageScreen(messageViewModel: MessageViewModel) {
                                 Column {
                                     Text(
                                         text = account.displayName ?: "Unknown",
-                                        style = MaterialTheme.typography.bodySmall
+                                        style = MaterialTheme.typography.bodyLarge
                                     )
+                                    Spacer(modifier = Modifier.height(5.dp))
                                     Text(
                                         text = account.email ?: "",
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Text(
+                                        text = account.phoneNumber ?: "",
                                         style = MaterialTheme.typography.bodySmall
                                     )
                                 }
@@ -97,6 +115,19 @@ fun MessageScreen(messageViewModel: MessageViewModel) {
 
                             HorizontalDivider()
                         }
+
+                        DropdownMenuItem(
+                            text = { Text("Підтвердити номер телефону") },
+                            onClick = {
+                                menuExpandet = false
+                                messageViewModel.checkPhoneVerification {
+                                    val intent = Intent(context, PhoneAuthActivity::class.java)
+                                    context.startActivity(intent)
+                                }
+                            }
+                        )
+
+                        HorizontalDivider()
 
                         DropdownMenuItem(
                             //три крапки справа вгорі

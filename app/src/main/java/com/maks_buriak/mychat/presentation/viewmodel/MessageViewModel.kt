@@ -9,6 +9,8 @@ import com.maks_buriak.mychat.domain.models.User
 import com.maks_buriak.mychat.domain.usecase.GetCurrentUserUseCase
 import com.maks_buriak.mychat.domain.usecase.SendMessageUseCase
 import com.maks_buriak.mychat.domain.usecase.SignOutUseCase
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -19,6 +21,9 @@ class MessageViewModel(
 ) : ViewModel() {
 
     val currentUser: User? = getCurrentUserUseCase()
+
+    private val _uiMessage = MutableStateFlow<String?>(null)
+    val uiMessage: StateFlow<String?> get() = _uiMessage
 
     fun sendMessage(messageText: String){
         Log.d("MessageViewModel", "sendMessage called with message=$messageText")
@@ -51,5 +56,18 @@ class MessageViewModel(
 
     fun signOut() {
         signOutUseCase()
+    }
+
+    fun checkPhoneVerification(onNeedVerification: () -> Unit) {
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user?.phoneNumber.isNullOrEmpty()) {
+            onNeedVerification()
+        } else {
+            _uiMessage.value = "Номер телефону вже підтверджено"
+        }
+    }
+
+    fun clearUiMessage() {
+        _uiMessage.value = null
     }
 }

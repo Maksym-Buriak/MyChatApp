@@ -41,10 +41,10 @@ class AuthActivity : ComponentActivity() {
 
         setContent {
             MyChatTheme {
-                val navigateToPhoneAuth by authViewModel.navigateToPhoneAuth.collectAsState()
-                if (navigateToPhoneAuth) {
-                    startPhoneAuth()
-                }
+//                val navigateToPhoneAuth by authViewModel.navigateToPhoneAuth.collectAsState()
+//                if (navigateToPhoneAuth) {
+//                    startPhoneAuth()
+//                }
 
                 AuthScreen(
                     activity = this,
@@ -63,13 +63,14 @@ class AuthActivity : ComponentActivity() {
         finish() // щоб не можна було вернутися назад
     }
 
-    private fun startPhoneAuth() {
-        startActivity(Intent(this, PhoneAuthActivity::class.java))
-        finish()
-    }
+//    private fun startPhoneAuth() {
+//        startActivity(Intent(this, PhoneAuthActivity::class.java))
+//        finish()
+//    }
 
     private fun navigateAfterSignIn(phoneNumber: String?) {
-        if (phoneNumber != null) startMain()
-        else startPhoneAuth()
+//        if (phoneNumber != null) startMain()
+//        else startPhoneAuth()
+        startMain()
     }
 }

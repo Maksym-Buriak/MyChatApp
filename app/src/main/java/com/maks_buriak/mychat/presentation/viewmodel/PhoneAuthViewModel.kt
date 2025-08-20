@@ -3,7 +3,6 @@ package com.maks_buriak.mychat.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maks_buriak.mychat.domain.usecase.GetCurrentUserUseCase
-import com.maks_buriak.mychat.domain.usecase.SaveUserToFirestoreUseCase
 import com.maks_buriak.mychat.domain.usecase.SendVerificationCodeUseCase
 import com.maks_buriak.mychat.domain.usecase.UpdateUserPhoneNumberUseCase
 import com.maks_buriak.mychat.domain.usecase.VerifyCodeUseCase
@@ -18,7 +17,7 @@ class PhoneAuthViewModel(
     private val updateUserPhoneNumberUseCase: UpdateUserPhoneNumberUseCase
 ) : ViewModel() {
 
-    var verificationId: String? = null
+    private var verificationId: String? = null
 
     private val _status = MutableStateFlow<String?>(null)
     val status: StateFlow<String?> = _status
