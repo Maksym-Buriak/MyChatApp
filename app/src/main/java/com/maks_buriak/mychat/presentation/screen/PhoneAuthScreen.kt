@@ -54,7 +54,8 @@ fun PhoneAuthScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Button(
-                onClick = { viewModel.sendCode(phoneNumber) }
+                onClick = { viewModel.sendCode(phoneNumber) },
+                enabled = phoneNumber.isNotBlank()
             ) {
                 Text("Надіслати код")
             }
@@ -72,7 +73,8 @@ fun PhoneAuthScreen(
             Button(
                 onClick = {
                     viewModel.verifyCode(code, phoneNumber, onVerified)
-                }
+                },
+                enabled = code.isNotBlank()
             ) {
                 Text("Підтвердити код")
             }

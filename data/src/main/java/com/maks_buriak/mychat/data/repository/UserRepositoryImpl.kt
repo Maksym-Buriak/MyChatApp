@@ -39,4 +39,12 @@ class UserRepositoryImpl(private val firestore: FirebaseFirestore) : UserReposit
             .update("phoneNumber", phoneNumber)
             .await()
     }
+
+    override suspend fun isPhoneNumberTaken(phoneNumber: String): Boolean {
+        val querySnapshot = firestore.collection("users")
+            .whereEqualTo("phoneNumber", phoneNumber)
+            .get()
+            .await()
+        return !querySnapshot.isEmpty
+    }
 }

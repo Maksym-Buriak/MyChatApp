@@ -40,7 +40,8 @@ val appModule = module {
             sendVerificationCodeUseCase = get(),
             verifyCodeUseCase = get(),
             getCurrentUserUseCase = get(),
-            updateUserPhoneNumberUseCase = get()
+            updateUserPhoneNumberUseCase = get(),
+            isPhoneNumberTakenUseCase = get()
         )
     }
 }

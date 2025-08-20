@@ -3,6 +3,7 @@ package com.maks_buriak.mychat.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maks_buriak.mychat.domain.usecase.GetCurrentUserUseCase
+import com.maks_buriak.mychat.domain.usecase.IsPhoneNumberTakenUseCase
 import com.maks_buriak.mychat.domain.usecase.SendVerificationCodeUseCase
 import com.maks_buriak.mychat.domain.usecase.UpdateUserPhoneNumberUseCase
 import com.maks_buriak.mychat.domain.usecase.VerifyCodeUseCase
@@ -14,7 +15,8 @@ class PhoneAuthViewModel(
     private val sendVerificationCodeUseCase: SendVerificationCodeUseCase,
     private val verifyCodeUseCase: VerifyCodeUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
-    private val updateUserPhoneNumberUseCase: UpdateUserPhoneNumberUseCase
+    private val updateUserPhoneNumberUseCase: UpdateUserPhoneNumberUseCase,
+    private val isPhoneNumberTakenUseCase: IsPhoneNumberTakenUseCase
 ) : ViewModel() {
 
     private var verificationId: String? = null
@@ -26,6 +28,13 @@ class PhoneAuthViewModel(
     val codeSent: StateFlow<Boolean> = _codeSent
 
     fun sendCode(phoneNumber: String) = viewModelScope.launch {
+        val taken = isPhoneNumberTakenUseCase(phoneNumber)
+        if (taken) {
+            _status.value = "Цей номер телефону вже використовується"
+            _codeSent.value = false
+            return@launch
+        }
+
         val result = sendVerificationCodeUseCase(phoneNumber)
         result.onSuccess { id ->
             verificationId = id

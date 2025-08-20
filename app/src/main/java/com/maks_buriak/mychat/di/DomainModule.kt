@@ -1,6 +1,7 @@
 package com.maks_buriak.mychat.di
 
 import com.maks_buriak.mychat.domain.usecase.GetCurrentUserUseCase
+import com.maks_buriak.mychat.domain.usecase.IsPhoneNumberTakenUseCase
 import com.maks_buriak.mychat.domain.usecase.SaveUserToFirestoreUseCase
 import com.maks_buriak.mychat.domain.usecase.SendMessageUseCase
 import com.maks_buriak.mychat.domain.usecase.SendVerificationCodeUseCase
@@ -42,5 +43,9 @@ val domainModule = module {
 
     factory<UpdateUserPhoneNumberUseCase> {
         UpdateUserPhoneNumberUseCase(repository = get())
+    }
+
+    factory<IsPhoneNumberTakenUseCase> {
+        IsPhoneNumberTakenUseCase(repository = get())
     }
 }
