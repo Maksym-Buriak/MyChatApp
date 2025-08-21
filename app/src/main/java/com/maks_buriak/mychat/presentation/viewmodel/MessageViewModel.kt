@@ -17,13 +17,28 @@ import java.util.UUID
 class MessageViewModel(
     private val sendMessageUseCase: SendMessageUseCase,
     private val signOutUseCase: SignOutUseCase,
-    getCurrentUserUseCase: GetCurrentUserUseCase
+    private val getCurrentUserUseCase: GetCurrentUserUseCase
 ) : ViewModel() {
 
-    val currentUser: User? = getCurrentUserUseCase()
+    private val _currentUser = MutableStateFlow<User?>(null)
+    val currentUser: StateFlow<User?> get() = _currentUser
 
     private val _uiMessage = MutableStateFlow<String?>(null)
     val uiMessage: StateFlow<String?> get() = _uiMessage
+
+    init {
+        loadCurrentUser()
+    }
+
+    private fun loadCurrentUser() {
+        viewModelScope.launch {
+            _currentUser.value = getCurrentUserUseCase()
+        }
+    }
+
+    fun refreshCurrentUser() {
+        loadCurrentUser()
+    }
 
     fun sendMessage(messageText: String){
         Log.d("MessageViewModel", "sendMessage called with message=$messageText")
@@ -83,7 +98,7 @@ class MessageViewModel(
     }
 
     fun getPhoneAction(): PhoneAction {
-        val user = FirebaseAuth.getInstance().currentUser
+        val user = _currentUser.value
         return if (user?.phoneNumber.isNullOrEmpty()) {
             PhoneAction.ADD
         } else {

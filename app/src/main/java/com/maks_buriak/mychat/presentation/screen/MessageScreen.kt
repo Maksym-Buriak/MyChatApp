@@ -54,7 +54,12 @@ fun MessageScreen(messageViewModel: MessageViewModel) {
 
     val uiMessage by messageViewModel.uiMessage.collectAsState()
 
-    val phoneAction = messageViewModel.getPhoneAction()
+    val currentUser by messageViewModel.currentUser.collectAsState()
+
+    val phoneAction = if (currentUser?.phoneNumber.isNullOrEmpty())
+        MessageViewModel.PhoneAction.ADD
+    else
+        messageViewModel.getPhoneAction()
 
     uiMessage?.let { msg ->
         LaunchedEffect(msg) {
@@ -78,7 +83,7 @@ fun MessageScreen(messageViewModel: MessageViewModel) {
                     ) {
 
                         //Верхня частина меню з акаунтом
-                        messageViewModel.currentUser?.let { account ->
+                        currentUser?.let { account ->
                             Row(
                                 modifier = Modifier
                                     .padding(16.dp)
