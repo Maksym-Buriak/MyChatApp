@@ -1,6 +1,5 @@
 package com.maks_buriak.mychat.presentation.screen
 
-import android.content.Intent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -38,13 +37,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.maks_buriak.mychat.R
-import com.maks_buriak.mychat.presentation.activity.AuthActivity
-import com.maks_buriak.mychat.presentation.activity.PhoneAuthActivity
 import com.maks_buriak.mychat.presentation.viewmodel.MessageViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MessageScreen(messageViewModel: MessageViewModel) {
+fun MessageScreen(messageViewModel: MessageViewModel, onAddPhone: () -> Unit, onSignOut: () -> Unit) {
     // UI тут, можна звертатись до viewModel
 
     val context = LocalContext.current
@@ -135,11 +132,7 @@ fun MessageScreen(messageViewModel: MessageViewModel) {
                             onClick = {
                                 menuExpandet = false
                                 messageViewModel.checkPhoneVerification {
-                                    val intent = Intent(context, PhoneAuthActivity::class.java).apply {
-                                        putExtra("phoneAction", phoneAction.name)
-                                    }
-
-                                    context.startActivity(intent)
+                                    onAddPhone()
                                 }
                             }
                         )
@@ -154,14 +147,7 @@ fun MessageScreen(messageViewModel: MessageViewModel) {
                                 menuExpandet = false
                                 messageViewModel.signOut()
 
-                                //Переходимо на екран логіну
-                                val intent = Intent(context, AuthActivity::class.java)
-                                context.startActivity(intent)
-
-                                //Закриваємо поточну Activity
-                                if (context is android.app.Activity) {
-                                    context.finish()
-                                }
+                                onSignOut()
                             }
                         )
                     }

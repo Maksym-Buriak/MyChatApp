@@ -1,5 +1,7 @@
 package com.maks_buriak.mychat.presentation.screen
 
+import android.annotation.SuppressLint
+import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -18,9 +21,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.maks_buriak.mychat.presentation.viewmodel.PhoneAuthViewModel
 
+@SuppressLint("ContextCastToActivity")
 @Composable
 fun PhoneAuthScreen(
     viewModel: PhoneAuthViewModel,
@@ -31,6 +36,19 @@ fun PhoneAuthScreen(
     val codeSent by viewModel.codeSent.collectAsState()
 
     val status by viewModel.status.collectAsState()
+
+    val context = LocalContext.current
+    val currentActivityProvider = { context as Activity }
+
+    val isVerified by viewModel.isVerified.collectAsState()
+    val isSending by viewModel.isSending.collectAsState()
+
+    LaunchedEffect(isVerified) {
+        if (isVerified) {
+            onVerified()
+        }
+    }
+
 
     Column(
         modifier = Modifier
@@ -54,8 +72,10 @@ fun PhoneAuthScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Button(
-                onClick = { viewModel.sendCode(phoneNumber) },
-                enabled = phoneNumber.isNotBlank()
+                onClick = {
+                    viewModel.sendCode(phoneNumber, currentActivityProvider)
+                },
+                enabled = phoneNumber.isNotBlank() && !isSending,
             ) {
                 Text("Надіслати код")
             }
@@ -72,9 +92,9 @@ fun PhoneAuthScreen(
 
             Button(
                 onClick = {
-                    viewModel.verifyCode(code, phoneNumber, onVerified)
+                    viewModel.verifyCode(code, phoneNumber)
                 },
-                enabled = code.isNotBlank()
+                enabled = code.isNotBlank() && !isSending
             ) {
                 Text("Підтвердити код")
             }

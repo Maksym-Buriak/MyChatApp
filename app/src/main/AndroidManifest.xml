@@ -18,7 +18,7 @@
 
         <!-- AuthActivity -->
         <activity
-            android:name=".presentation.activity.AuthActivity"
+            android:name=".presentation.activity.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.MyChat">
@@ -29,12 +29,12 @@
             </intent-filter>
         </activity>
 
-        <!-- MainActivity -->
-        <activity android:name=".presentation.activity.MainActivity"
-            android:exported="false"/>
+<!--        &lt;!&ndash; MainActivity &ndash;&gt;-->
+<!--        <activity android:name=".presentation.activity.MainActivity"-->
+<!--            android:exported="false"/>-->
 
-        <activity android:name=".presentation.activity.PhoneAuthActivity"
-            android:exported="true" />
+<!--        <activity android:name=".presentation.activity.PhoneAuthActivity"-->
+<!--            android:exported="true" />-->
 
     </application>
 

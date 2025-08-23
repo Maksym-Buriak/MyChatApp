@@ -7,6 +7,7 @@ import com.maks_buriak.mychat.domain.usecase.IsPhoneNumberTakenUseCase
 import com.maks_buriak.mychat.domain.usecase.SendVerificationCodeUseCase
 import com.maks_buriak.mychat.domain.usecase.UpdateUserPhoneNumberUseCase
 import com.maks_buriak.mychat.domain.usecase.VerifyCodeUseCase
+import com.maks_buriak.mychat.presentation.UserManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -16,7 +17,8 @@ class PhoneAuthViewModel(
     private val verifyCodeUseCase: VerifyCodeUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val updateUserPhoneNumberUseCase: UpdateUserPhoneNumberUseCase,
-    private val isPhoneNumberTakenUseCase: IsPhoneNumberTakenUseCase
+    private val isPhoneNumberTakenUseCase: IsPhoneNumberTakenUseCase,
+    private val userManager: UserManager
 ) : ViewModel() {
 
     private var verificationId: String? = null
@@ -27,15 +29,23 @@ class PhoneAuthViewModel(
     private val _codeSent = MutableStateFlow(false)
     val codeSent: StateFlow<Boolean> = _codeSent
 
-    fun sendCode(phoneNumber: String) = viewModelScope.launch {
+    private val _isVerified = MutableStateFlow(false) //контролює перехід після успішної верифікації
+    val isVerified: StateFlow<Boolean> = _isVerified
+
+    private val _isSending = MutableStateFlow(false) //керує станом кнопок
+    val isSending: StateFlow<Boolean> = _isSending
+
+    fun sendCode(phoneNumber: String, activityProvider: () -> Any) = viewModelScope.launch {
+        _isSending.value = true
         val taken = isPhoneNumberTakenUseCase(phoneNumber)
         if (taken) {
             _status.value = "Цей номер телефону вже використовується"
             _codeSent.value = false
+            _isSending.value = false
             return@launch
         }
 
-        val result = sendVerificationCodeUseCase(phoneNumber)
+        val result = sendVerificationCodeUseCase(phoneNumber, activityProvider)
         result.onSuccess { id ->
             verificationId = id
             _status.value = "Код відправлено на номер $phoneNumber"
@@ -44,9 +54,11 @@ class PhoneAuthViewModel(
             _status.value = "Помилка відправки коду: ${it.message}"
             _codeSent.value = false
         }
+        _isSending.value = false
     }
 
-    fun verifyCode(code: String, phoneNumber: String, onVerified: () -> Unit) = viewModelScope.launch {
+    fun verifyCode(code: String, phoneNumber: String) = viewModelScope.launch {
+        _isSending.value = true
         verificationId?.let { id ->
             val result = verifyCodeUseCase(id, code)
             result.onSuccess {
@@ -55,13 +67,15 @@ class PhoneAuthViewModel(
                 currentUser?.let { user ->
 
                     updateUserPhoneNumberUseCase(user.uid, phoneNumber)
+                    userManager.refreshUser()
+                    _isVerified.value = true
                 }
-                onVerified()
             }.onFailure {
                 _status.value = "Неправильний код: ${it.message}"
             }
         } ?: run {
             _status.value = "Спочатку надішліть код"
         }
+        _isSending.value = false
     }
 }

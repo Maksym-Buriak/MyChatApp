@@ -6,26 +6,20 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.common.api.ApiException
 import com.maks_buriak.mychat.data.authentication.google.GoogleSignInHelper
 import com.maks_buriak.mychat.domain.models.User
-import com.maks_buriak.mychat.domain.usecase.GetCurrentUserUseCase
 import com.maks_buriak.mychat.domain.usecase.SaveUserToFirestoreUseCase
 import com.maks_buriak.mychat.domain.usecase.SignInWithGoogleUseCase
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.maks_buriak.mychat.presentation.UserManager
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class AuthViewModel(
     private val signInWithGoogleUseCase: SignInWithGoogleUseCase,
-    getCurrentUserUseCase: GetCurrentUserUseCase,
     private val googleSignInHelper: GoogleSignInHelper,
-    private val saveUserToFirestoreUseCase: SaveUserToFirestoreUseCase
+    private val saveUserToFirestoreUseCase: SaveUserToFirestoreUseCase,
+    private val userManager: UserManager
 ) : ViewModel() {
 
-    private val _userState = MutableStateFlow(getCurrentUserUseCase())
-    val userState: StateFlow<User?> = _userState
-
-//    private val _navigateToPhoneAuth = MutableStateFlow(false)
-//    val navigateToPhoneAuth: StateFlow<Boolean> = _navigateToPhoneAuth
-
+    val userState: StateFlow<User?> = userManager.currentUser
 
     fun startGoogleSignIn(): Intent {
         return googleSignInHelper.getSignInIntent()
@@ -50,17 +44,16 @@ class AuthViewModel(
             result.onSuccess { authUserResult ->
 
                 val user = authUserResult.user
-                _userState.value = user
 
                 if (authUserResult.isNewUser) {
                     saveUserToFirestoreUseCase(user)
                 }
-
-//                if (user.phoneNumber == null) {
-//                    _navigateToPhoneAuth.value = true // call the callback to open the PhoneAuthActivity
-//                }
+                viewModelScope.launch {
+                    userManager.refreshUser()
+                }
             }.onFailure {
-                _userState.value = null
+                //_userState.value = null
+                TODO()
             }
         }
     }

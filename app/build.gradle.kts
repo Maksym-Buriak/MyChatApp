@@ -103,6 +103,14 @@ dependencies {
     implementation("com.google.firebase:firebase-database")
     implementation("com.google.firebase:firebase-firestore")
 
+    // Navigation
+    implementation("androidx.navigation:navigation-compose:2.9.3")
+
+    // Koin core + Android
+    implementation("io.insert-koin:koin-android:3.4.3")
+    // Koin для Compose
+    implementation("io.insert-koin:koin-androidx-compose:3.4.3")
+
     // Compose BoM
     implementation(platform("androidx.compose:compose-bom:2025.05.01"))
 
@@ -123,13 +131,12 @@ dependencies {
 
     // ViewModel для Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
-    implementation(libs.androidx.navigation.compose.jvmstubs)
 
-    // Koin
-    val koin_version = "4.0.3"
-    implementation("io.insert-koin:koin-core:$koin_version")
-    implementation("io.insert-koin:koin-android:$koin_version")
-    testImplementation("io.insert-koin:koin-test:$koin_version")
+//    // Koin
+//    val koin_version = "4.0.3"
+//    implementation("io.insert-koin:koin-core:$koin_version")
+//    implementation("io.insert-koin:koin-android:$koin_version")
+//    testImplementation("io.insert-koin:koin-test:$koin_version")
 
     // Тестування
     testImplementation(libs.junit)

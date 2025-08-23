@@ -21,9 +21,6 @@ class FirebaseAuthRepositoryImpl(private val firebaseAuth: FirebaseAuth) : Fireb
             val user = FirebaseUserDto.fromFirebaseUser(firebaseUser).toDomain()
             Result.success(AuthUserResult(user = user, isNewUser = isNewUser))
 
-//            val dto = FirebaseUserDto.fromFirebaseUser(firebaseUser)
-//            Result.success(dto.toDomain())
-
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -36,6 +33,10 @@ class FirebaseAuthRepositoryImpl(private val firebaseAuth: FirebaseAuth) : Fireb
 
     override fun signOut() {
         firebaseAuth.signOut()
+    }
+
+    override fun addAuthStateListener(listener: () -> Unit) {
+        firebaseAuth.addAuthStateListener { listener() }
     }
 
     fun FirebaseUserDto.toDomain(): User {

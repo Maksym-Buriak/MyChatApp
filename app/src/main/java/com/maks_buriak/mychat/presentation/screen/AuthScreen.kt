@@ -1,6 +1,5 @@
 package com.maks_buriak.mychat.presentation.screen
 
-import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -19,16 +18,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.maks_buriak.mychat.domain.models.User
 import com.maks_buriak.mychat.presentation.viewmodel.AuthViewModel
 
 @Composable
-fun AuthScreen(activity: Activity, onSignedIn: () -> Unit, viewModel: AuthViewModel) {
+fun AuthScreen(viewModel: AuthViewModel, onSignedIn: (User) -> Unit) {
     val userState by viewModel.userState.collectAsState()
 
     // Якщо користувач авторизований → переходимо
     LaunchedEffect(userState) {
-        if (userState != null) {
-            onSignedIn()
+        userState?.let { user ->
+            onSignedIn(user)
         }
     }
 

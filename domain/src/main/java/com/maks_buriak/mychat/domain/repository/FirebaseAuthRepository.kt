@@ -8,4 +8,5 @@ interface FirebaseAuthRepository {
 
     fun getCurrentUser(): User?
     fun signOut()
+    fun addAuthStateListener(listener: () -> Unit)
 }

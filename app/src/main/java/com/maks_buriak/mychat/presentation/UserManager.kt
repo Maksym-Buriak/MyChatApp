@@ -1,0 +1,62 @@
+package com.maks_buriak.mychat.presentation
+
+import com.google.firebase.auth.FirebaseAuth
+import com.maks_buriak.mychat.domain.models.User
+import com.maks_buriak.mychat.domain.repository.FirebaseAuthRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+
+class UserManager(private val repository: FirebaseAuthRepository) {
+
+    private val auth = FirebaseAuth.getInstance()
+    private val scope = CoroutineScope(Dispatchers.IO)
+
+    private val _currentUser = MutableStateFlow<User?>(null)
+    val currentUser: StateFlow<User?> get() = _currentUser
+
+    private val listener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+        scope.launch {
+            val firebaseUser = firebaseAuth.currentUser
+            if (firebaseUser == null) {
+                _currentUser.value = null
+            } else {
+                try {
+                    firebaseUser.reload().await()
+                    _currentUser.value = repository.getCurrentUser()
+                } catch (e: Exception) {
+                    _currentUser.value = null
+                }
+            }
+        }
+    }
+
+    init {
+        auth.addAuthStateListener(listener)
+        scope.launch { refreshUser() } // ініціалізація стану при запуску
+    }
+
+    // Оновлюємо стан користувача з репозиторію
+    suspend fun refreshUser() {
+        try {
+            val firebaseUser = auth.currentUser
+            if (firebaseUser == null) {
+                _currentUser.value = null
+            } else {
+                firebaseUser.reload().await()  // Перевірка стану в Firebase
+                val user = repository.getCurrentUser()
+                _currentUser.value = user
+            }
+        } catch (e: Exception) {
+            _currentUser.value = null
+        }
+    }
+
+    fun logout() {
+        repository.signOut()
+        _currentUser.value = null
+    }
+}

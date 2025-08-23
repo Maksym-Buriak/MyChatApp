@@ -6,9 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.maks_buriak.mychat.domain.models.Message
 import com.maks_buriak.mychat.domain.models.User
-import com.maks_buriak.mychat.domain.usecase.GetCurrentUserUseCase
 import com.maks_buriak.mychat.domain.usecase.SendMessageUseCase
-import com.maks_buriak.mychat.domain.usecase.SignOutUseCase
+import com.maks_buriak.mychat.presentation.UserManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -16,40 +15,31 @@ import java.util.UUID
 
 class MessageViewModel(
     private val sendMessageUseCase: SendMessageUseCase,
-    private val signOutUseCase: SignOutUseCase,
-    private val getCurrentUserUseCase: GetCurrentUserUseCase
+    private val userManager: UserManager
 ) : ViewModel() {
 
-    private val _currentUser = MutableStateFlow<User?>(null)
-    val currentUser: StateFlow<User?> get() = _currentUser
+    val currentUser: StateFlow<User?> = userManager.currentUser
 
     private val _uiMessage = MutableStateFlow<String?>(null)
     val uiMessage: StateFlow<String?> get() = _uiMessage
 
-    init {
-        loadCurrentUser()
-    }
-
-    private fun loadCurrentUser() {
-        viewModelScope.launch {
-            _currentUser.value = getCurrentUserUseCase()
-        }
-    }
-
-    fun refreshCurrentUser() {
-        loadCurrentUser()
-    }
 
     fun sendMessage(messageText: String){
         Log.d("MessageViewModel", "sendMessage called with message=$messageText")
 
-        val user = FirebaseAuth.getInstance().currentUser
+        //val user = FirebaseAuth.getInstance().currentUser
+        val firebaseUser = FirebaseAuth.getInstance().currentUser
+        if (firebaseUser == null) {
+            Log.e("MessageViewModel", "No FirebaseUser available")
+            return
+        }
+
         val message = Message (
             id = UUID.randomUUID().toString(),
             //id = "1",
             text = messageText
         )
-        user?.getIdToken(true)?.addOnCompleteListener { task ->
+        firebaseUser.getIdToken(true).addOnCompleteListener { task ->
 
             if (task.isSuccessful) {
                 // токен валідний — відправляємо повідомлення
@@ -64,13 +54,16 @@ class MessageViewModel(
             } else {
                 // токен відкликано -> вихід
                 FirebaseAuth.getInstance().signOut()
+                viewModelScope.launch {
+                    userManager.refreshUser()
+                }
             }
 
         }
     }
 
     fun signOut() {
-        signOutUseCase()
+        userManager.logout()
     }
 
     fun checkPhoneVerification(onNeedVerification: () -> Unit) {
@@ -98,11 +91,7 @@ class MessageViewModel(
     }
 
     fun getPhoneAction(): PhoneAction {
-        val user = _currentUser.value
-        return if (user?.phoneNumber.isNullOrEmpty()) {
-            PhoneAction.ADD
-        } else {
-            PhoneAction.CHANGE
-        }
+        return if (currentUser.value?.phoneNumber.isNullOrEmpty()) PhoneAction.ADD
+        else PhoneAction.CHANGE
     }
 }
