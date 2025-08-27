@@ -8,7 +8,8 @@ data class FirebaseUserDto(
     val displayName: String? = null,
     val email: String? = null,
     val photoUrl: String? = null,
-    val phoneNumber: String? = null
+    val phoneNumber: String? = null,
+    val nickName: String? = null
 ) {
     companion object {
         fun fromFirebaseUser(user: FirebaseUser) = FirebaseUserDto(
@@ -16,7 +17,8 @@ data class FirebaseUserDto(
             displayName = user.displayName,
             email = user.email,
             photoUrl = user.photoUrl?.toString(),
-            phoneNumber = user.phoneNumber
+            phoneNumber = user.phoneNumber,
+            nickName = null
         )
     }
 
@@ -26,7 +28,8 @@ data class FirebaseUserDto(
             displayName = displayName,
             email = email,
             photoUrl = photoUrl,
-            phoneNumber = phoneNumber
+            phoneNumber = phoneNumber,
+            nickName = nickName
         )
     }
 }

@@ -3,6 +3,7 @@ package com.maks_buriak.mychat.data.repository
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import com.maks_buriak.mychat.data.storage.models.FirebaseUserDto
 import com.maks_buriak.mychat.domain.models.User
 import com.maks_buriak.mychat.domain.repository.UserRepository
 import kotlinx.coroutines.tasks.await
@@ -16,6 +17,7 @@ class UserRepositoryImpl(private val firestore: FirebaseFirestore) : UserReposit
             "email" to user.email,
             "photoUrl" to user.photoUrl,
             "phoneNumber" to user.phoneNumber,
+            "nickName" to user.nickName,
             "createdAt" to FieldValue.serverTimestamp() // серверний час
         )
 
@@ -30,7 +32,8 @@ class UserRepositoryImpl(private val firestore: FirebaseFirestore) : UserReposit
             .document(uid)
             .get()
             .await()
-        return snapshot.toObject(User::class.java)
+        val dto = snapshot.toObject(FirebaseUserDto::class.java)
+        return dto?.toDomain()
     }
 
     override suspend fun updateUserPhoneNumber(uid: String, phoneNumber: String) {
@@ -43,6 +46,21 @@ class UserRepositoryImpl(private val firestore: FirebaseFirestore) : UserReposit
     override suspend fun isPhoneNumberTaken(phoneNumber: String): Boolean {
         val querySnapshot = firestore.collection("users")
             .whereEqualTo("phoneNumber", phoneNumber)
+            .get()
+            .await()
+        return !querySnapshot.isEmpty
+    }
+
+    override suspend fun updateUserNick(uid: String, nickName: String) {
+        firestore.collection("users")
+            .document(uid)
+            .update("nickName", nickName)
+            .await()
+    }
+
+    override suspend fun isNickNameTaken(nickName: String): Boolean {
+        val querySnapshot = firestore.collection("users")
+            .whereEqualTo("nickName", nickName)
             .get()
             .await()
         return !querySnapshot.isEmpty

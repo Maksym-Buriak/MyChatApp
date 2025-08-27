@@ -1,12 +1,15 @@
 package com.maks_buriak.mychat.di
 
 import com.maks_buriak.mychat.domain.usecase.GetCurrentUserUseCase
+import com.maks_buriak.mychat.domain.usecase.GetUserByUidUseCase
+import com.maks_buriak.mychat.domain.usecase.IsNickNameTakenUseCase
 import com.maks_buriak.mychat.domain.usecase.IsPhoneNumberTakenUseCase
 import com.maks_buriak.mychat.domain.usecase.SaveUserToFirestoreUseCase
 import com.maks_buriak.mychat.domain.usecase.SendMessageUseCase
 import com.maks_buriak.mychat.domain.usecase.SendVerificationCodeUseCase
 import com.maks_buriak.mychat.domain.usecase.SignInWithGoogleUseCase
 import com.maks_buriak.mychat.domain.usecase.SignOutUseCase
+import com.maks_buriak.mychat.domain.usecase.UpdateUserNickUseCase
 import com.maks_buriak.mychat.domain.usecase.UpdateUserPhoneNumberUseCase
 import com.maks_buriak.mychat.domain.usecase.VerifyCodeUseCase
 import org.koin.dsl.module
@@ -47,5 +50,17 @@ val domainModule = module {
 
     factory<IsPhoneNumberTakenUseCase> {
         IsPhoneNumberTakenUseCase(repository = get())
+    }
+
+    factory<UpdateUserNickUseCase> {
+        UpdateUserNickUseCase(repository = get())
+    }
+
+    factory<GetUserByUidUseCase> {
+        GetUserByUidUseCase(repository = get())
+    }
+
+    factory<IsNickNameTakenUseCase> {
+        IsNickNameTakenUseCase(repository = get())
     }
 }

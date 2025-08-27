@@ -5,6 +5,7 @@ import com.maks_buriak.mychat.data.authentication.google.GoogleSignInHelper
 import com.maks_buriak.mychat.presentation.UserManager
 import com.maks_buriak.mychat.presentation.viewmodel.AuthViewModel
 import com.maks_buriak.mychat.presentation.viewmodel.MessageViewModel
+import com.maks_buriak.mychat.presentation.viewmodel.NickNameViewModel
 import com.maks_buriak.mychat.presentation.viewmodel.PhoneAuthViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -34,7 +35,8 @@ val appModule = module {
             signInWithGoogleUseCase = get(),
             googleSignInHelper = get(),
             saveUserToFirestoreUseCase = get(),
-            userManager = get()
+            userManager = get(),
+            getUserByUidUseCase = get()
         )
     }
 
@@ -46,6 +48,13 @@ val appModule = module {
             updateUserPhoneNumberUseCase = get(),
             isPhoneNumberTakenUseCase = get(),
             userManager = get()
+        )
+    }
+
+    viewModel<NickNameViewModel> {
+        NickNameViewModel(
+            updateUserNickUseCase = get(),
+            isNickNameTakenUseCase = get()
         )
     }
 }

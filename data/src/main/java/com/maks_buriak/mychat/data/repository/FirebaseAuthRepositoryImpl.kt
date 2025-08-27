@@ -45,7 +45,8 @@ class FirebaseAuthRepositoryImpl(private val firebaseAuth: FirebaseAuth) : Fireb
             displayName = displayName,
             email = email,
             photoUrl = photoUrl,
-            phoneNumber = phoneNumber
+            phoneNumber = phoneNumber,
+            nickName = nickName
         )
     }
 }

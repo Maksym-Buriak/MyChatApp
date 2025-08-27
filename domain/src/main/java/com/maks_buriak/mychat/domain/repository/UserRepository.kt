@@ -8,4 +8,7 @@ interface UserRepository {
     suspend fun getUserByUid(uid: String): User?
     suspend fun updateUserPhoneNumber(uid: String, phoneNumber: String)
     suspend fun isPhoneNumberTaken(phoneNumber: String): Boolean
+
+    suspend fun updateUserNick(uid: String, nickName: String)
+    suspend fun isNickNameTaken(nickName: String): Boolean
 }
