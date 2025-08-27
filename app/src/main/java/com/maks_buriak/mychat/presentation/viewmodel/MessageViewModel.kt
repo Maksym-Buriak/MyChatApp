@@ -94,4 +94,29 @@ class MessageViewModel(
         return if (currentUser.value?.phoneNumber.isNullOrEmpty()) PhoneAction.ADD
         else PhoneAction.CHANGE
     }
+
+
+    enum class NickAction {
+        ADD, CHANGE
+    }
+
+    fun getNickAction(): NickAction {
+        return if (currentUser.value?.nickName.isNullOrEmpty()) NickAction.ADD
+        else NickAction.CHANGE
+    }
+
+    fun checkNickChange(onNeedNick: () -> Unit) {
+        val action = getNickAction()
+
+        when (action) {
+            NickAction.ADD -> {
+                onNeedNick()
+                _uiMessage.value = "Додайте свій нік"
+            }
+            NickAction.CHANGE -> {
+                onNeedNick()
+                _uiMessage.value = "Для зміни ніку введіть його у відповідне поле та підтвердіть"
+            }
+        }
+    }
 }

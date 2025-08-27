@@ -102,6 +102,9 @@ fun AppNavHost(navController: NavHostController) {
                 onAddPhone = {
                     navController.navigate(Screen.PhoneAuth.route)
                 },
+                onAddNick = {
+                    navController.navigate(Screen.NickName.route)
+                },
                 onSignOut = {
                     messageViewModel.signOut() // userManager.logout()
                 }

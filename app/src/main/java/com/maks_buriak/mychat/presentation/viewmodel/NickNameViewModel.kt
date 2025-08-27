@@ -4,13 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maks_buriak.mychat.domain.usecase.IsNickNameTakenUseCase
 import com.maks_buriak.mychat.domain.usecase.UpdateUserNickUseCase
+import com.maks_buriak.mychat.presentation.UserManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class NickNameViewModel(
     private val updateUserNickUseCase: UpdateUserNickUseCase,
-    private val isNickNameTakenUseCase: IsNickNameTakenUseCase
+    private val isNickNameTakenUseCase: IsNickNameTakenUseCase,
+    private val userManager: UserManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<NickNameUiState>(NickNameUiState.Idle)
@@ -53,6 +55,7 @@ class NickNameViewModel(
                 _uiState.value = NickNameUiState.Error("Цей нік вже зайнятий")
             } else {
                 updateUserNickUseCase(uid, trimmedNick)
+                userManager.refreshUser()
                 _uiState.value = NickNameUiState.Success
             }
         }

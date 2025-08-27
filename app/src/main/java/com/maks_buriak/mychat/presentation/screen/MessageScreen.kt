@@ -1,5 +1,6 @@
 package com.maks_buriak.mychat.presentation.screen
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
@@ -33,7 +35,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.maks_buriak.mychat.R
@@ -41,7 +45,7 @@ import com.maks_buriak.mychat.presentation.viewmodel.MessageViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MessageScreen(messageViewModel: MessageViewModel, onAddPhone: () -> Unit, onSignOut: () -> Unit) {
+fun MessageScreen(messageViewModel: MessageViewModel, onAddPhone: () -> Unit, onAddNick: () -> Unit, onSignOut: () -> Unit) {
     // UI тут, можна звертатись до viewModel
 
     val context = LocalContext.current
@@ -93,7 +97,7 @@ fun MessageScreen(messageViewModel: MessageViewModel, onAddPhone: () -> Unit, on
                                     model = account.photoUrl ?: R.drawable.ic_launcher_background,
                                     contentDescription = "User Avatar",
                                     modifier = Modifier
-                                        .size(55.dp)
+                                        .size(65.dp)
                                         .clip(CircleShape),
                                 )
 
@@ -102,9 +106,16 @@ fun MessageScreen(messageViewModel: MessageViewModel, onAddPhone: () -> Unit, on
                                 Column {
                                     Text(
                                         text = account.displayName ?: "Unknown",
+                                        style = MaterialTheme.typography.titleMedium.copy(
+                                            textDecoration = TextDecoration.Underline
+                                        )
+                                    )
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Text(
+                                        text = account.nickName ?: "Нік не встановлено",
                                         style = MaterialTheme.typography.bodyLarge
                                     )
-                                    Spacer(modifier = Modifier.height(5.dp))
+                                    Spacer(modifier = Modifier.height(7.dp))
                                     Text(
                                         text = account.email ?: "",
                                         style = MaterialTheme.typography.bodySmall
@@ -133,6 +144,25 @@ fun MessageScreen(messageViewModel: MessageViewModel, onAddPhone: () -> Unit, on
                                 menuExpandet = false
                                 messageViewModel.checkPhoneVerification {
                                     onAddPhone()
+                                }
+                            }
+                        )
+
+                        HorizontalDivider()
+
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    if (messageViewModel.getNickAction() == MessageViewModel.NickAction.ADD)
+                                        "Додати нік"
+                                    else
+                                        "Змінити нік"
+                                )
+                            },
+                            onClick = {
+                                menuExpandet = false
+                                messageViewModel.checkNickChange {
+                                    onAddNick()
                                 }
                             }
                         )

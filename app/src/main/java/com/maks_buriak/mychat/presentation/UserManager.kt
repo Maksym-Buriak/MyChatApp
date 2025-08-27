@@ -3,6 +3,7 @@ package com.maks_buriak.mychat.presentation
 import com.google.firebase.auth.FirebaseAuth
 import com.maks_buriak.mychat.domain.models.User
 import com.maks_buriak.mychat.domain.repository.FirebaseAuthRepository
+import com.maks_buriak.mychat.domain.usecase.GetUserByUidUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,7 +11,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class UserManager(private val repository: FirebaseAuthRepository) {
+class UserManager(
+    private val repository: FirebaseAuthRepository,
+    private val getUserByUidUseCase: GetUserByUidUseCase
+) {
 
     private val auth = FirebaseAuth.getInstance()
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -48,12 +52,22 @@ class UserManager(private val repository: FirebaseAuthRepository) {
             } else {
                 firebaseUser.reload().await()  // Перевірка стану в Firebase
                 val user = repository.getCurrentUser()
-                _currentUser.value = user
+                val updatedUser = user?.uid?.let { getUserByUidUseCase(it) }
+                _currentUser.value = updatedUser ?: user
             }
         } catch (e: Exception) {
             _currentUser.value = null
         }
     }
+
+//    fun updateNickName(uid: String) {
+//        scope.launch {
+//            val updatedUser = getUserByUidUseCase(uid)
+//            if (updatedUser != null) {
+//                _currentUser.value = updatedUser
+//            }
+//        }
+//    }
 
     fun logout() {
         repository.signOut()

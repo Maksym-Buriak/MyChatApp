@@ -21,7 +21,7 @@ val appModule = module {
     }
 
     // UserManager singleton for global user state
-    single { UserManager(repository = get()) }
+    single { UserManager(repository = get(), getUserByUidUseCase = get()) }
 
     viewModel<MessageViewModel> {
         MessageViewModel(
@@ -54,7 +54,8 @@ val appModule = module {
     viewModel<NickNameViewModel> {
         NickNameViewModel(
             updateUserNickUseCase = get(),
-            isNickNameTakenUseCase = get()
+            isNickNameTakenUseCase = get(),
+            userManager = get()
         )
     }
 }
