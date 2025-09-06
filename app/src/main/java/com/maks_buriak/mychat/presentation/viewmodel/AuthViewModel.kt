@@ -24,11 +24,6 @@ class AuthViewModel(
 
     val userState: StateFlow<User?> = userManager.currentUser
 
-    private val _nickState = MutableStateFlow<String?>(null)
-    val nickState: StateFlow<String?> = _nickState
-
-    private var nickLoadedForUid: String? = null // щоб не робити повторний запит
-
     fun startGoogleSignIn(): Intent {
         return googleSignInHelper.getSignInIntent()
     }
@@ -59,29 +54,8 @@ class AuthViewModel(
 
                 userManager.refreshUser()
 
-                val userFromFirestore = getUserByUidUseCase(user.uid)
-                _nickState.value = userFromFirestore?.nickName
             }.onFailure {
-                //_userState.value = null
                 it.printStackTrace()
-            }
-        }
-    }
-
-
-    fun loadNickNameIfNeeded(uid: String) {
-        if (nickLoadedForUid == uid) return
-
-        viewModelScope.launch {
-            try {
-                val user = getUserByUidUseCase(uid)
-                // Якщо нік відсутній у Firestore, ставимо пустий рядок, а не null
-                _nickState.value = user?.nickName ?: ""
-                nickLoadedForUid = uid // запам'ятовуємо, що вже завантажили
-            } catch (e: Exception) {
-                e.printStackTrace()
-                _nickState.value = "" // щоб не застрягати в Loading
-                nickLoadedForUid = uid
             }
         }
     }

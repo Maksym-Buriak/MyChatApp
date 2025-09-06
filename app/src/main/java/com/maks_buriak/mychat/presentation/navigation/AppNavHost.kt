@@ -1,6 +1,8 @@
 package com.maks_buriak.mychat.presentation.navigation
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -13,6 +15,7 @@ import com.maks_buriak.mychat.presentation.screen.AuthScreen
 import com.maks_buriak.mychat.presentation.screen.MessageScreen
 import com.maks_buriak.mychat.presentation.screen.NickNameScreen
 import com.maks_buriak.mychat.presentation.screen.PhoneAuthScreen
+import com.maks_buriak.mychat.presentation.screen.SplashScreen
 import com.maks_buriak.mychat.presentation.viewmodel.AuthViewModel
 import com.maks_buriak.mychat.presentation.viewmodel.MessageViewModel
 import com.maks_buriak.mychat.presentation.viewmodel.NickNameViewModel
@@ -26,6 +29,7 @@ sealed class Screen(val route: String) {
     object NickName : Screen("nick_name")
 }
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun AppNavHost(navController: NavHostController) {
 
@@ -33,36 +37,17 @@ fun AppNavHost(navController: NavHostController) {
     val authViewModel: AuthViewModel = koinViewModel()
     val userState by authViewModel.userState.collectAsState()
 
-    val nickState by authViewModel.nickState.collectAsState()
-
-    // Підвантаження ніку при зміні userState
-    LaunchedEffect(userState?.uid) {
-        val uid = userState?.uid ?: return@LaunchedEffect
-        authViewModel.loadNickNameIfNeeded(uid)
-    }
-
-    // Показуємо Loading тільки поки nickState ще не отримано
-    if (userState != null && nickState == null) {
-        androidx.compose.material3.CircularProgressIndicator(
-            modifier = Modifier.fillMaxSize()
-        )
-        return
-    }
-
-
     NavHost(
         navController = navController,
-        //startDestination = if (userState == null) Screen.Auth.route else Screen.Messages.route
         startDestination = when {
             userState == null -> Screen.Auth.route
-            nickState.isNullOrEmpty() -> Screen.NickName.route
+            userState?.nickName.isNullOrEmpty() -> Screen.NickName.route
             else -> Screen.Messages.route
         }
     ) {
 
         composable(Screen.NickName.route) {
             val viewModel: NickNameViewModel = koinViewModel()
-            //val uid = authViewModel.userState.value?.uid ?: return@composable
             val uid = userState?.uid ?: return@composable
 
             NickNameScreen(
@@ -77,12 +62,11 @@ fun AppNavHost(navController: NavHostController) {
         }
 
         composable(Screen.Auth.route) {
-            //val authViewModel: AuthViewModel = koinViewModel()
             AuthScreen(
                 viewModel = authViewModel,
-                onSignedIn = { user ->
-                    val nick = authViewModel.nickState.value
-                    if (nick.isNullOrEmpty()) {
+                onSignedIn = {
+                    val user = userState
+                    if (user?.nickName.isNullOrEmpty()) {
                         navController.navigate(Screen.NickName.route) {
                             popUpTo(Screen.Auth.route) { inclusive = true }
                         }

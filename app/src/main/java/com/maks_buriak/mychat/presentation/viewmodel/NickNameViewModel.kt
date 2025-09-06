@@ -55,7 +55,7 @@ class NickNameViewModel(
                 _uiState.value = NickNameUiState.Error("Цей нік вже зайнятий")
             } else {
                 updateUserNickUseCase(uid, trimmedNick)
-                userManager.refreshUser()
+                userManager.updateCachedNickName(trimmedNick)
                 _uiState.value = NickNameUiState.Success
             }
         }

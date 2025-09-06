@@ -60,14 +60,12 @@ class UserManager(
         }
     }
 
-//    fun updateNickName(uid: String) {
-//        scope.launch {
-//            val updatedUser = getUserByUidUseCase(uid)
-//            if (updatedUser != null) {
-//                _currentUser.value = updatedUser
-//            }
-//        }
-//    }
+    fun updateCachedNickName(newNick: String) {
+        val current = _currentUser.value
+        if (current != null) {
+            _currentUser.value = current.copy(nickName = newNick)
+        }
+    }
 
     fun logout() {
         repository.signOut()
